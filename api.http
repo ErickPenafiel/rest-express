@@ -1,0 +1,37 @@
+### Obtener todas las peliculas
+GET http://localhost:3000/movies
+
+### Obtener una pelicula por id
+GET http://localhost:3000/movies/1
+# GET http://localhost:3000/movies/GET http://localhost:3000/movies/1
+
+### Obtener una pelicula por genero
+GET http://localhost:3000/movies?genre=Action
+
+### Crear una pelicula
+POST http://localhost:3000/movies
+Content-Type: application/json
+
+{
+    "title": "The Godfather",
+    "year": 1972,
+    "director": "Francis Ford Coppola",
+    "duration": "2h 55min",
+    "poster": "https://m.media-amazon.com/images/I/51NpxYy1EGL._AC_.jpg",
+    "genre": ["Action", "Crime", "Drama"],
+    "rate": 9.2
+}
+
+#
+# {
+#     "title": 123456,
+#     "year": 1998
+# }
+
+### Actualizar una pelicula
+PATCH http://localhost:3000/movies/c8a7d63f-3b04-44d3-9d95-8782fd7dcfaf
+Content-Type: application/json
+
+{
+    "year": 2001
+}
