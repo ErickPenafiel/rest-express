@@ -1,31 +1,33 @@
 const express = require('express')
 const movies = require('./movies.json')
 const crypto = require('node:crypto')
-// const cors = require('cors')
+const cors = require('cors')
 const { validateMovie, validatePartialMovie } = require('./schemas/movies')
 
 const app = express()
 app.disable('x-powered-by')
-// app.use(cors())
+app.use(cors({
+  origin: (origin, callback) => {
+    const ACCEPTED_ORIGINS = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:8080',
+      'https://movies.com'
+    ]
+    if (ACCEPTED_ORIGINS.includes(origin) || !origin) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}))
 app.use(express.json())
-
-const ACCEPTED_ORIGINS = [
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'http://localhost:8080',
-  'https://movies.com'
-]
 
 app.get('/', (req, res) => {
   res.json({ mensaje: 'Hello World' })
 })
 
 app.get('/movies', (req, res) => {
-  const origin = req.header('origin')
-  if (ACCEPTED_ORIGINS.includes(origin) || !origin) {
-    res.setHeader('Access-Control-Allow-Origin', origin)
-  }
-
   const { genre } = req.query
   if (genre) {
     const filteredMovies = movies.filter(movie => movie.genre.some(g => g.toLowerCase() === genre.toLowerCase()))
@@ -76,21 +78,10 @@ app.patch('/movies/:id', (req, res) => {
 })
 
 app.options('/movies/:id', (req, res) => {
-  const origin = req.header('origin')
-  if (ACCEPTED_ORIGINS.includes(origin) || !origin) {
-    res.setHeader('Access-Control-Allow-Origin', origin)
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE')
-  }
-
   res.status(200).end()
 })
 
 app.delete('/movies/:id', (req, res) => {
-  const origin = req.header('origin')
-  if (ACCEPTED_ORIGINS.includes(origin) || !origin) {
-    res.setHeader('Access-Control-Allow-Origin', origin)
-  }
-
   const { id } = req.params
   const movieIndex = movies.findIndex(movie => movie.id === id)
   if (movieIndex < 0) return res.status(404).json({ error: 'Movie not found' })
